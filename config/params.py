@@ -6,9 +6,12 @@ params = {
     "Iy": 6760,
     "Iz": 6407,
     "Ixz": 800,
+    "dt" : 0.01, # step size
+    "a2" : 0.5, # numerical integration constant
+    "rho_sea_level": 1.225,
     "main_rotor": {
-        "FS.HUB": 132.4, # FT
-        "WL.HUB": 98.2, # FT
+        "FS.HUB": 132.4, # FT (fuselage station)
+        "WL.HUB": 98.2, # FT (waterline)
         "IS": .11, # Main rotor shaft incidence (rad)
         "E.MR": 0.50,
         "IB": 212,
@@ -28,7 +31,7 @@ params = {
         "YVV.FUS": -167,
         "ZWW.FUS": -85,
     },
-    "wn": {
+    "wing": {
         "FS.WN": 0,
         "WL.WN": 0,
         "ZUU.WN":0,
@@ -47,7 +50,7 @@ params = {
         "FS.VT": 380,
         "WL.VT": 80,
         "YUU.VT": 3.3,
-        "YUW.VT": -47,
+        "YUV.VT": -47,
         "YMAX.VT": -17,
     },
     "tail_rotor": {
