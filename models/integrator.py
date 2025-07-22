@@ -31,7 +31,7 @@ def angular_rates_to_euler_dot(phi, theta, omega):
     ])
     return T @ omega
 
-def euler6dof_step(state, F, M, m, I, dt):
+def euler6dof_step(state, F, M, m, I, dt, a1, b1):
     """
     Performs one integration step using Euler's method for rigid body 6-DOF.
     
@@ -47,9 +47,10 @@ def euler6dof_step(state, F, M, m, I, dt):
         I - 3x3 inertia matrix (assumed diagonal)
         dt - time step (s)
     """
-    # Extract state
+    # Extract previous states
     pos = state["position"]
     vb = state["body_velocity"]
+    ap = state["body_acceleration"]
     ang = state["attitude"]
     omg = state["angular_rate"]
 
@@ -62,6 +63,11 @@ def euler6dof_step(state, F, M, m, I, dt):
     ab[4] = F[4] / I[1,1] - vb[3]*vb[5]*(I[0,0]-I[2,2])/I[1,1]+(vb[5]**2.0-vb[3]**2.0)*I[0,2]/I[1,1]
     ab[5] = F[5] / I[2,2] - I[0,2]*ab[3]/I[2,2]
 
+    for i in range(5):
+        vb[i] = vb[i] + dt * (a1 * ab[i] + b1 * ap[i])
+
+    ve = []
+    ve[0] = vb[0] 
     # Angular acceleration
     I_inv = np.linalg.inv(I)
     alpha = I_inv @ (M - np.cross(omg, I @ omg))
