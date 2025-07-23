@@ -17,7 +17,7 @@ class Atmosphere:
         self.update(altitude_m)
 
     def update(self, altitude_m):
-        temp_exp = environment.get("temp_exp", 1.0)
+        temp_exp = 1.73 - 0.000157 * altitude_m
         temp_ratio = 1.0-self.lapse_rate*(altitude_m)
         press_ratio = temp_ratio**temp_exp
         dens_ratio = press_ratio/temp_ratio

@@ -1,11 +1,13 @@
 import time
 import numpy as np
-# from models.helicopter import Helicopter
+from models.helicopter import Helicopter
+from models.atmosphere import Atmosphere
 from models.integrator import euler6dof_step
 from utils.logger import Logger
 from utils.plotter import plot_variables
+from config.params import params
 
-# heli = Helicopter()
+atmosphere = Atmosphere() 
 logger = Logger(variable_names=["Time", "Altitude", "VerticalSpeed", "Acceleration", "XPos", "YPos", "EulerX", "EulerY", "EulerZ"])
 
 # Define initial state and parameters (these are just placeholders)
@@ -16,8 +18,14 @@ previous_state = {
     "body_acceleration": [0.0, 0.0, 0.0],
     "angular_acceleration": [0.0, 0.0, 0.0],
     "attitude": [0.0, 0.0, 0.0],
-    "angular_rate": [0.0, 0.0, 0.0]
+    "angular_rate": [0.0, 0.0, 0.0],
+    "vi_mr_prev": 0.0,
+    "gv_7_prev": 0.0,
+    "gv_8_prev": 0.0,
+    "gr_7_prev": 0.0,
+    "gr_8_prev": 0.0
 }
+heli = Helicopter(params)
 
 # Define parameters (replace with actual values)
 F = np.array([0.0, 0.0, 10.0])  # lb
@@ -28,11 +36,17 @@ dt = 0.01  # Time step
 a1, a2 = 1.5, 0.5  # Constants for the step
 b1, b2 = 1-a1, 1-a2
 t = 0.0
+control_inputs = np.array([0.0, 0.0, 0.0, 0.0])
 
 for step in range(1000):
 
-    new_state = euler6dof_step(previous_state, F, M, m, I, dt, a1, b1, a2, b2)
+    atmosphere.update(-previous_state["position"][2])
+    environment_inputs = {
+        "rho": atmosphere.get_density()
+    }
+    helicopter_data = heli.step(dt, previous_state, control_inputs, environment_inputs)
 
+    new_state = euler6dof_step(previous_state, helicopter_data["F"], helicopter_data["M"], m, I, dt, a1, b1, a2, b2)
     position = new_state["position"]
     body_velocity = new_state["body_velocity"]
     body_acceleration = new_state["body_acceleration"]
@@ -48,7 +62,12 @@ for step in range(1000):
         "body_acceleration": body_acceleration,
         "angular_acceleration": angular_acceleration,
         "attitude": attitude,
-        "angular_rate": angular_rate
+        "angular_rate": angular_rate,
+        "vi_mr_prev": helicopter_data["vi_mr_prev"],
+        "gv_7_prev": helicopter_data["gv_7_prev"],
+        "gv_8_prev": helicopter_data["gv_8_prev"],
+        "gr_7_prev": helicopter_data["gr_7_prev"],
+        "gr_8_prev": helicopter_data["gr_8_prev"]
     }
 
     logger.log(Time=t, Altitude=position[2],
