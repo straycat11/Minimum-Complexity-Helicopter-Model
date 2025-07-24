@@ -20,11 +20,12 @@ previous_state = {
     "angular_acceleration": [0.0, 0.0, 0.0],
     "attitude": [0.0, 0.0, 0.0],
     "angular_rate": [0.0, 0.0, 0.0],
-    "vi_mr_prev": 60.0,
+    "vi_mr_prev": 33.44,
     "gv_7_prev": 0.0,
     "gv_8_prev": 0.0,
     "gr_7_prev": 0.0,
-    "gr_8_prev": 0.0
+    "gr_8_prev": 0.0,
+    "vi_tr_prev": 30.0
 }
 heli = Helicopter(params)
 
@@ -69,7 +70,8 @@ for step in range(50):
         "gv_7_prev": helicopter_data["gv_7_prev"],
         "gv_8_prev": helicopter_data["gv_8_prev"],
         "gr_7_prev": helicopter_data["gr_7_prev"],
-        "gr_8_prev": helicopter_data["gr_8_prev"]
+        "gr_8_prev": helicopter_data["gr_8_prev"],
+        "vi_tr_prev": helicopter_data["vi_tr_prev"]
     }
 
     logger.log(Time=t, Altitude=position[2],

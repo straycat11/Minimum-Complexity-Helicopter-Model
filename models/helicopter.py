@@ -22,6 +22,7 @@ class Helicopter:
             }
 
         self.rotor = Rotor(params)
+        self.tail_rotor = TailRotor(params)
         # self.components = []
         # self.components.append(Fuselage(params))
         # self.components.append(HorizontalTail(params))
@@ -40,14 +41,12 @@ class Helicopter:
         #     total_force += np.array([f["Fx"], f["Fy"], f["Fz"]])
         #     total_moment += np.array([f["Mx"], f["My"], f["Mz"]])
 
-        f = self.rotor.get_force_and_moment(states,control_inputs,environment_inputs)
-        vi_mr_prev = f["vi_mr"]
-        gv_7_prev = f["gv_7"]
-        gv_8_prev = f["gv_8"]
-        gr_7_prev = f["gr_7"]
-        gr_8_prev = f["gr_8"]
+        f_main_rotor = self.rotor.get_force_and_moment(states,control_inputs,environment_inputs)
+        f_tail_rotor = self.tail_rotor.get_force_and_moment(states,control_inputs,environment_inputs)
 
-        F = np.array([f["Fx"],f["Fy"],f["Fz"]])
-        M = np.array([f["Mx"],f["My"],f["Mz"]])
-        return {"F": F, "M": M, "vi_mr_prev": vi_mr_prev, "gv_7_prev": gv_7_prev, "gv_8_prev": gv_8_prev, "gr_7_prev": gr_7_prev, "gr_8_prev": gr_8_prev, "power_mr": f["power_mr"], "torque_mr": f["torque_mr"]}
+        F = np.array([f_main_rotor["Fx"],f_main_rotor["Fy"],f_main_rotor["Fz"]])
+        M = np.array([f_main_rotor["Mx"],f_main_rotor["My"],f_main_rotor["Mz"]])
+        return {"F": F, "M": M, "vi_mr_prev": f_main_rotor["vi_mr"], "gv_7_prev": f_main_rotor["gv_7"],
+            "gv_8_prev": f_main_rotor["gv_8"], "gr_7_prev": f_main_rotor["gr_7"], "gr_8_prev": f_main_rotor["gr_8"],
+            "power_mr": f_main_rotor["power_mr"], "torque_mr": f_main_rotor["torque_mr"], "vi_tr_prev": f_tail_rotor["vi_tr"]}
         

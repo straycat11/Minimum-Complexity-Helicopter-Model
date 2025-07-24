@@ -24,7 +24,7 @@ class HorizontalTail(Component):
     def get_force_and_moment(self, state, controls, environment):
         airspeed = state.get("airspeed", np.array([0.0, 0.0, 0.0]))
         angular_rate = state.get("angular_rate", np.array([0.0, 0.0, 0.0]))
-        rho = environment.get("rho", 1.225)
+        rho = environment.get("rho", 0.0023769)
         vi_mr = state.get("vi_mr_prev", 0.0)
         vi_tr = state.get("vi_tr_prev", 0.0)
 

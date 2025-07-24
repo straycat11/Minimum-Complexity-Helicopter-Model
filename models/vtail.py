@@ -18,7 +18,7 @@ class VerticalTail(Component):
     def get_force_and_moment(self, state, controls, environment):
         airspeed = state.get("airspeed", math.array([0.0, 0.0, 0.0]))
         angular_rate = state.get("angular_rate", math.array([0.0, 0.0, 0.0]))
-        rho = environment.get("rho", 1.225)
+        rho = environment.get("rho", 0.0023769)
         vi_tr = state.get("vi_tr_prev", 0.0)
         va_vt = airspeed(1)+vi_tr-self.d_vt*angular_rate(2)
         vta_vt = math.sqrt(airspeed(0)**2+va_vt**2)

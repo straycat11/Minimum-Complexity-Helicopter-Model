@@ -18,7 +18,7 @@ class Wing(Component):
     def get_force_and_moment(self, state, controls, environment):
         airspeed = state.get("airspeed", math.array([0.0, 0.0, 0.0]))
         angular_rate = state.get("angular_rate", math.array([0.0, 0.0, 0.0]))
-        rho = environment.get("rho", 1.225)
+        rho = environment.get("rho", 0.0023769)
         vi_mr = state.get("vi_mr_prev", 0.0)
 
         wa_wn = airspeed(2)-vi_mr

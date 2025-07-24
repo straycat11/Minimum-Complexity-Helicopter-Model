@@ -22,7 +22,7 @@ class Fuselage(Component):
     def get_force_and_moment(self, state, controls, environment):
         airspeed = state.get("airspeed", np.array([0.0, 0.0, 0.0]))
         angular_rate = state.get("angular_rate", np.array([0.0, 0.0, 0.0]))
-        rho = environment.get("rho", 1.225)
+        rho = environment.get("rho", 0.0023769)
         vi_mr = state.get("vi_mr_prev", 0.0)
         wa_fus = airspeed[2]-vi_mr
         d_fw = (airspeed[0]/(-wa_fus)*(self.h_hub-self.h_fus))-(self.d_fus-self.d_hub)
