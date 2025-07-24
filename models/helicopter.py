@@ -23,6 +23,7 @@ class Helicopter:
 
         self.rotor = Rotor(params)
         self.tail_rotor = TailRotor(params)
+        self.fuselage = Fuselage(params)
         # self.components = []
         # self.components.append(Fuselage(params))
         # self.components.append(HorizontalTail(params))
@@ -43,7 +44,8 @@ class Helicopter:
 
         f_main_rotor = self.rotor.get_force_and_moment(states,control_inputs,environment_inputs)
         f_tail_rotor = self.tail_rotor.get_force_and_moment(states,control_inputs,environment_inputs)
-
+        f_fuselage = self.fuselage.get_force_and_moment(states,control_inputs,environment_inputs)
+        
         F = np.array([f_main_rotor["Fx"],f_main_rotor["Fy"],f_main_rotor["Fz"]])
         M = np.array([f_main_rotor["Mx"],f_main_rotor["My"],f_main_rotor["Mz"]])
         return {"F": F, "M": M, "vi_mr_prev": f_main_rotor["vi_mr"], "gv_7_prev": f_main_rotor["gv_7"],
