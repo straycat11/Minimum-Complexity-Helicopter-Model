@@ -1,5 +1,6 @@
 from models.component import Component
 import math
+import numpy as np
 
 class VerticalTail(Component):
     def __init__(self, config):
@@ -16,15 +17,15 @@ class VerticalTail(Component):
 
 
     def get_force_and_moment(self, state, controls, environment):
-        airspeed = state.get("airspeed", math.array([0.0, 0.0, 0.0]))
-        angular_rate = state.get("angular_rate", math.array([0.0, 0.0, 0.0]))
+        airspeed = state.get("airspeed", np.array([0.0, 0.0, 0.0]))
+        angular_rate = state.get("angular_rate", np.array([0.0, 0.0, 0.0]))
         rho = environment.get("rho", 0.0023769)
         vi_tr = state.get("vi_tr_prev", 0.0)
-        va_vt = airspeed(1)+vi_tr-self.d_vt*angular_rate(2)
-        vta_vt = math.sqrt(airspeed(0)**2+va_vt**2)
-        y_vt = rho/2*(self.yuu_vt+abs(airspeed(0))*airspeed(0)+self.yuv_vt+abs(airspeed(0))*va_vt)
+        va_vt = airspeed[1]+vi_tr-self.d_vt*angular_rate[2]
+        vta_vt = math.sqrt(airspeed[0]**2+va_vt**2)
+        y_vt = rho/2*(self.yuu_vt+abs(airspeed[0])*airspeed[0]+self.yuv_vt+abs(airspeed[0])*va_vt)
 
-        if abs(va_vt) > 0.3*abs(airspeed(0)):
+        if abs(va_vt) > 0.3*abs(airspeed[0]):
             y_vt = rho/2*self.ymax_vt*abs(vta_vt)*va_vt
 
         l_vt = y_vt * self.h_vt

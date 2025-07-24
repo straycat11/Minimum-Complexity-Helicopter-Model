@@ -26,7 +26,6 @@ class HorizontalTail(Component):
         angular_rate = state.get("angular_rate", np.array([0.0, 0.0, 0.0]))
         rho = environment.get("rho", 0.0023769)
         vi_mr = state.get("vi_mr_prev", 0.0)
-        vi_tr = state.get("vi_tr_prev", 0.0)
 
         d_dw = (airspeed[0]/(vi_mr-airspeed[2])*(self.h_hub-self.h_ht))-(self.d_ht-self.d_hub-self.r_mr)
         d_dw = d_dw + 1.0

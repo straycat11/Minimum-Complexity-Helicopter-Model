@@ -8,8 +8,9 @@ from utils.plotter import plot_variables
 from config.params import params
 
 atmosphere = Atmosphere() 
-logger = Logger(variable_names=["Time", "Altitude", "VerticalSpeed", "Acceleration", "XPos", "YPos", "EulerX", "EulerY", "EulerZ"])
-loggerRotor = Logger(variable_names=["Time", "RotorForceX", "RotorForceY", "RotorForceZ", "RotorMomentZ", "RotorTorque"])
+logger = Logger(variable_names=["Time", "Altitude", "VerticalSpeed", "Acceleration", "XPos", "YPos", "ZPos", "EulerX", "EulerY", "EulerZ"])
+# loggerRotor = Logger(variable_names=["Time", "RotorForceX", "RotorForceY", "RotorForceZ", "RotorMomentZ", "RotorTorque"])
+loggerForcesAndMoments = Logger(variable_names=["Time", "ForceX", "ForceY", "ForceZ", "MomentX", "MomentY", "MomentZ"])
 
 # Define initial state and parameters (these are just placeholders)
 previous_state = {
@@ -39,7 +40,7 @@ a1, a2 = 1.5, 0.5  # Constants for the step
 b1, b2 = 1-a1, 1-a2
 t = 0.0
 
-control_inputs = np.deg2rad(np.array([11.6, 0.0, 0.0, 8.0]))
+control_inputs = np.deg2rad(np.array([11.6, 0.0, 0.0, 20.0]))
 
 for step in range(50):
 
@@ -49,7 +50,7 @@ for step in range(50):
     }
     helicopter_data = heli.step(dt, previous_state, control_inputs, environment_inputs)
 
-    new_state = euler6dof_step(previous_state, 0.0* helicopter_data["F"], 0.0*helicopter_data["M"], m, I, dt, a1, b1, a2, b2)
+    new_state = euler6dof_step(previous_state, helicopter_data["F"], helicopter_data["M"], m, I, dt, a1, b1, a2, b2)
     position = new_state["position"]
     body_velocity = new_state["body_velocity"]
     body_acceleration = new_state["body_acceleration"]
@@ -75,29 +76,38 @@ for step in range(50):
     }
 
     logger.log(Time=t, Altitude=position[2],
-                VerticalSpeed=earth_velocity[2],
-                  Acceleration=body_acceleration[2],
-                    XPos=position[0],
-                      YPos=position[1],
-                      EulerX=attitude[0],
-                        EulerY=attitude[1],
-                          EulerZ=attitude[2])
+            VerticalSpeed=earth_velocity[2],
+            Acceleration=body_acceleration[2],
+            XPos=position[0],
+            YPos=position[1],
+            ZPos=position[2],
+            EulerX=attitude[0],
+            EulerY=attitude[1],
+            EulerZ=attitude[2])
 
     
-    loggerRotor.log(Time=t,RotorForceX=helicopter_data["F"][0], RotorForceY=helicopter_data["F"][1], RotorForceZ=helicopter_data["F"][2], RotorMomentZ=helicopter_data["M"][2], RotorTorque=helicopter_data["torque_mr"])
+    loggerForcesAndMoments.log(Time=t,ForceX=helicopter_data["F"][0], ForceY=helicopter_data["F"][1], ForceZ=helicopter_data["F"][2],
+     MomentX=helicopter_data["M"][0], MomentY=helicopter_data["M"][1], MomentZ=helicopter_data["M"][2])
     t += dt
 
 logger.save("log.csv")
-loggerRotor.save("rotorLog.csv")
+# loggerRotor.save("rotorLog.csv")
+loggerForcesAndMoments.save("forcesAndMomentsLog.csv")
 
-# plot_variables("log.csv", 
+plot_variables("log.csv", 
+               x_var="Time", 
+               y_vars=["Altitude", "VerticalSpeed", "Acceleration","XPos","YPos", "EulerX", "EulerY", "EulerZ"],
+               title_prefix="Helicopter", 
+               ylabel="Flight Variable")
+
+# plot_variables("rotorLog.csv", 
 #                x_var="Time", 
-#                y_vars=["Altitude", "VerticalSpeed", "Acceleration","XPos","YPos", "EulerX", "EulerY", "EulerZ"],
+#                y_vars=["RotorForceX", "RotorForceY", "RotorForceZ", "RotorMomentZ", "RotorTorque"],
 #                title_prefix="Helicopter", 
 #                ylabel="Flight Variable")
 
-plot_variables("rotorLog.csv", 
-               x_var="Time", 
-               y_vars=["RotorForceX", "RotorForceY", "RotorForceZ", "RotorMomentZ", "RotorTorque"],
-               title_prefix="Helicopter", 
-               ylabel="Flight Variable")
+# plot_variables("forcesAndMomentsLog.csv", 
+#                x_var="Time", 
+#                y_vars=["ForceX", "ForceY", "ForceZ", "MomentX", "MomentY", "MomentZ"],
+#                title_prefix="Helicopter", 
+#                ylabel="Flight Variable")
