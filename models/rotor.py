@@ -30,11 +30,11 @@ class Rotor(Component):
         self.rho_sea_level = config["rho_sea_level"]
 
     def get_force_and_moment(self, state, controls, environment):
-        airspeed = state.get("airspeed", np.array([0.0, 0.0, 0.0]))
+        airspeed = state.get("body_velocity", np.array([0.0, 0.0, 0.0]))
         angular_rate = state.get("angular_rate", np.array([0.0, 0.0, 0.0]))
         velocity_dot = state.get("earth_velocity", np.array([0.0, 0.0, 0.0]))
-        rho = environment.get("rho", 1.225)
-        omega_mr = self.rpm_mr*2*math.pi/60.0
+        rho = environment.get("rho", 0.0023769)
+        omega_mr = self.rpm_mr*2.0*math.pi/60.0
         v_tip = self.r_mr*omega_mr
         fr_mr = self.cd0*self.r_mr*self.b_mr*self.c_mr
         gam_om_16 = rho*self.a_mr*self.c_mr*self.r_mr**4.0/self.i_b*omega_mr/16.0*(1.0+8.0/3.0*self.e_mr/self.r_mr)
@@ -45,7 +45,7 @@ class Rotor(Component):
         dl_da1 = rho/2.0*self.a_mr*self.b_mr*self.c_mr*self.r_mr*v_tip*v_tip*self.e_mr/6.0
         ct = self.wt/(rho*math.pi*self.r_mr*self.r_mr*v_tip*v_tip)
         a_sigma = self.a_mr*self.b_mr*self.c_mr/self.r_mr/math.pi
-        db1dv = 2.0/omega_mr/self.r_mr*(8.0*ct/a_sigma+(math.sqrt(ct/2)))
+        db1dv = 2.0/omega_mr/self.r_mr*(8.0*ct/a_sigma+(math.sqrt(ct/2.0)))
         da1du = -db1dv
         vi_mr = state.get("vi_mr_prev", 0.0)
         gv_7_prev = state.get("gv_7_prev", 0.0)
@@ -54,12 +54,12 @@ class Rotor(Component):
         gr_8_prev = state.get("gr_8_prev", 0.0)
 
         if airspeed[0] < self.vtrans:
-            wake_fm = 1
+            wake_fm = 1.0
         else:
-            wake_fm = 0
+            wake_fm = 0.0
 
         a_sum = gv_8_prev-controls[1]+kc*gv_7_prev+db1dv*airspeed[1]*(1.0+wake_fm)
-        b_sum = gv_7_prev-controls[2]-kc*gv_8_prev+da1du*airspeed[0]*(1.0+2.0*wake_fm)
+        b_sum = gv_7_prev+controls[2]-kc*gv_8_prev+da1du*airspeed[0]*(1.0+2.0*wake_fm)
 
         gr_7 = -itb*b_sum - itb2_om*a_sum-angular_rate[1]
         gr_8 = -itb*a_sum + itb2_om*b_sum-angular_rate[0]
@@ -68,9 +68,9 @@ class Rotor(Component):
         gv_8 = gv_8_prev + self.dt*(self.a2*gr_8 + self.b2 * gr_8_prev)
 
         wr = airspeed[2]+(gv_7-self.main_rotor_incidence)*airspeed[0]-gv_8*airspeed[1]
-        wb = wr + 2.0/3.0*omega_mr*self.r_mr*(controls[0]+0.75*self.twst_mr)
+        wb = wr + (2.0/3.0)*omega_mr*self.r_mr*(controls[0]+0.75*self.twst_mr)
 
-        for i in range(4):
+        for i in range(5):
             thrust_mr = (wb-vi_mr)*omega_mr*self.r_mr*rho*self.a_mr*self.b_mr*self.c_mr*self.r_mr/4.0
             vhat_2 = airspeed[0]**2.0 + airspeed[1]**2.0 + wr*(wr-2.0*vi_mr)
             vi_mr_2 = math.sqrt((vhat_2/2.0)*(vhat_2/2.0)+(thrust_mr/2.0/(rho*math.pi*self.r_mr**2.0))**2.0)-vhat_2/2.0
@@ -90,4 +90,4 @@ class Rotor(Component):
         m_mr = z_mr*self.d_hub - x_mr*self.h_hub + dl_db1*gv_7 + dl_da1*(-gv_8+controls[1]-self.k1*gv_7)
         n_mr = torque_mr
 
-        return {"Fx": x_mr, "Fy": y_mr, "Fz": z_mr, "Mx": l_mr, "My": m_mr, "Mz": n_mr, "vi_mr": vi_mr, "gv_7": gv_7, "gv_8": gv_8, "gr_7": gr_7, "gr_8": gr_8}
+        return {"Fx": x_mr, "Fy": y_mr, "Fz": z_mr, "Mx": l_mr, "My": m_mr, "Mz": n_mr, "vi_mr": vi_mr, "gv_7": gv_7, "gv_8": gv_8, "gr_7": gr_7, "gr_8": gr_8, "power_mr": power_mr, "torque_mr": torque_mr}

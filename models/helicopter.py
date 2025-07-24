@@ -49,5 +49,5 @@ class Helicopter:
 
         F = np.array([f["Fx"],f["Fy"],f["Fz"]])
         M = np.array([f["Mx"],f["My"],f["Mz"]])
-        return {"F": F, "M": M, "vi_mr_prev": vi_mr_prev, "gv_7_prev": gv_7_prev, "gv_8_prev": gv_8_prev, "gr_7_prev": gr_7_prev, "gr_8_prev": gr_8_prev}
+        return {"F": F, "M": M, "vi_mr_prev": vi_mr_prev, "gv_7_prev": gv_7_prev, "gv_8_prev": gv_8_prev, "gr_7_prev": gr_7_prev, "gr_8_prev": gr_8_prev, "power_mr": f["power_mr"], "torque_mr": f["torque_mr"]}
         
