@@ -26,10 +26,10 @@ class TailRotor(Component):
         vb_tr = vr_tr + 2.0/3.0*self.omega_tr*self.r_tr*(controls[3]+self.twst_tr*0.75)
         vi_tr = state.get("vi_tr_prev", 0.0)
 
-        for i in range(5):
-            thrust_tr = (vb_tr-vi_tr)*self.omega_tr*self.r_tr*rho*self.a_tr*self.sol_tr*math.pi*self.r_tr*self.r_tr/4.0
+        for i in range(10):
+            thrust_tr = (vb_tr-vi_tr)*self.omega_tr*self.r_tr*rho*self.a_tr*self.sol_tr*math.pi*self.r_tr/4.0
             vhat_2 = (airspeed[2]+angular_rate[1]*self.d_tr)**2.0 + airspeed[0]**2.0 + vr_tr*(vr_tr-2.0*vi_tr)
-            vi_tr_2 = math.sqrt((vhat_2/2.0)*(vhat_2/2.0)+(thrust_tr/2.0/(rho*math.pi*self.r_tr**2.0))**2.0)-vhat_2/2.0
+            vi_tr_2 = math.sqrt((vhat_2/2.0)**2.0+(thrust_tr/2.0/(rho*math.pi*self.r_tr**2.0))**2.0)-vhat_2/2.0
             vi_tr = math.sqrt(abs(vi_tr_2))
         
         power_tr = thrust_tr*vi_tr
