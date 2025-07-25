@@ -43,4 +43,4 @@ class HorizontalTail(Component):
             z_ht = rho/2.0*self.zmax_ht*abs(vta_ht)*wa_ht
 
         m_ht = z_ht * self.d_ht
-        return {"Fx": 0.0, "Fy": 0.0, "Fz": 0.0, "Mx": 0.0, "My": m_ht, "Mz": 0.0}
+        return {"Fx": 0.0, "Fy": 0.0, "Fz": z_ht, "Mx": 0.0, "My": m_ht, "Mz": 0.0}

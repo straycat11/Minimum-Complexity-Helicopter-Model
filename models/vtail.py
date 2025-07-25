@@ -30,4 +30,4 @@ class VerticalTail(Component):
 
         l_vt = y_vt * self.h_vt
         n_vt = -y_vt * self.d_vt
-        return {"Fx": 0.0, "Fy": 0.0, "Fz": 0.0, "Mx": l_vt, "My": 0.0, "Mz": n_vt}
+        return {"Fx": 0.0, "Fy": y_vt, "Fz": 0.0, "Mx": l_vt, "My": 0.0, "Mz": n_vt}
