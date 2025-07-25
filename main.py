@@ -20,6 +20,7 @@ previous_state = {
     "body_acceleration": [0.0, 0.0, 0.0],
     "angular_acceleration": [0.0, 0.0, 0.0],
     "attitude": [0.0, 0.0, 0.0],
+    "attitude_q": [1.0, 0.0, 0.0, 0.0],
     "angular_rate": [0.0, 0.0, 0.0],
     "vi_mr_prev": 33.44,
     "gv_7_prev": 0.0,
@@ -58,6 +59,7 @@ for step in range(50):
     angular_rate = new_state["angular_rate"]
     angular_acceleration = new_state["angular_acceleration"]
     attitude = new_state["attitude"]
+    attiude_q = new_state["attitude_q"]
 
     previous_state = {
         "position": position,
@@ -66,6 +68,7 @@ for step in range(50):
         "body_acceleration": body_acceleration,
         "angular_acceleration": angular_acceleration,
         "attitude": attitude,
+        "attitude_q": attiude_q,
         "angular_rate": angular_rate,
         "vi_mr_prev": helicopter_data["vi_mr_prev"],
         "gv_7_prev": helicopter_data["gv_7_prev"],

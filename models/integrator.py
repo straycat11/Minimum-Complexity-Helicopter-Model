@@ -1,5 +1,20 @@
 import math
 import numpy as np
+from scipy.spatial.transform import Rotation as R
+
+def quaternion_derivative(q, omega):
+    # q = [w, x, y, z]
+    # omega = [p, q, r] = body angular rates
+    p, q_, r = omega
+    w, x, y, z = q
+
+    dqdt = 0.5 * np.array([
+        -x * p - y * q_ - z * r,
+         w * p + y * r - z * q_,
+         w * q_ + z * p - x * r,
+         w * r + x * q_ - y * p
+    ])
+    return dqdt
 
 def euler6dof_step(state, F, M, m, I, dt, a1, b1, a2, b2):
     # Extract previous states
@@ -9,6 +24,7 @@ def euler6dof_step(state, F, M, m, I, dt, a1, b1, a2, b2):
     ab_prev = state["body_acceleration"]
     omgdot_prev = state["angular_acceleration"]
     ang = state["attitude"]
+    q = state["attitude_q"]
     omg = state["angular_rate"]
 
     c4 = math.cos(ang[0])
@@ -44,10 +60,14 @@ def euler6dof_step(state, F, M, m, I, dt, a1, b1, a2, b2):
     ve[5] = (omg[2] * c4 + omg[1] *s4)/c5
 
     xe = np.array([0.0, 0.0, 0.0])
-    euler_angles = np.array([0.0, 0.0, 0.0])
+
+    dqdt = quaternion_derivative(q, omg)
+    q_new = q + dqdt * dt
+    q_new = q_new / np.linalg.norm(q_new)  # Normalize to prevent drift
+
+    euler_angles = R.from_quat([q_new[1], q_new[2], q_new[3], q_new[0]]).as_euler("xyz")
     for i in range(3):
         xe[i] = pos[i] + dt * (a2 * ve[i] + b2 * vp[i])
-        euler_angles[i] = ang[i] + dt * (a2 * ve[i+3] + b2 * omg[i])
 
     # Euler integration
     new_state = {
@@ -57,7 +77,8 @@ def euler6dof_step(state, F, M, m, I, dt, a1, b1, a2, b2):
         "earth_velocity": ve[:3],
         "angular_rate": omg,
         "angular_acceleration": ab[3:6],
-        "attitude": euler_angles
+        "attitude": euler_angles,
+        "attitude_q": q_new
     }
 
     return new_state
