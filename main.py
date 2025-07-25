@@ -5,12 +5,28 @@ from models.atmosphere import Atmosphere
 from models.integrator import euler6dof_step
 from utils.logger import Logger
 from utils.plotter import plot_variables
+from utils.plotter import plot_grouped_subfigures
 from config.params import params
+import matplotlib.pyplot as plt
 
 atmosphere = Atmosphere() 
 logger = Logger(variable_names=["Time", "Altitude", "VerticalSpeed", "Acceleration", "XPos", "YPos", "ZPos", "EulerX", "EulerY", "EulerZ"])
 # loggerRotor = Logger(variable_names=["Time", "RotorForceX", "RotorForceY", "RotorForceZ", "RotorMomentZ", "RotorTorque"])
 loggerForcesAndMoments = Logger(variable_names=["Time", "ForceX", "ForceY", "ForceZ", "MomentX", "MomentY", "MomentZ"])
+loggerControl = Logger(variable_names=[
+    "Time",
+    "TargetYaw", "Yaw", "YawError", "TailRotor",
+    "TargetVz", "Vz", "VzError", "Collective",
+    "Roll", "RollError", "LatCyclic",
+    "Pitch", "PitchError", "LongCyclic"
+])
+
+target_state = {
+    "yaw": 0.0,           # rad
+    "vz": 0.0,            # m/s
+    "vx": 0.0,            # m/s 
+    "vy": 0.0          # m/s
+}
 
 # Define initial state and parameters (these are just placeholders)
 previous_state = {
@@ -50,6 +66,25 @@ for step in range(50):
         "rho": atmosphere.get_density()
     }
     helicopter_data = heli.step(dt, previous_state, control_inputs, environment_inputs)
+    
+    loggerControl.log(
+        Time=t,
+        TargetYaw=np.rad2deg(target_state["yaw"]), Yaw=np.rad2deg(previous_state["attitude"])[2],
+        YawError=np.rad2deg(target_state["yaw"]) - np.rad2deg(previous_state["attitude"])[2],
+        TailRotor=np.rad2deg(control_inputs[3]),
+
+        TargetVz=target_state["vz"], Vz=previous_state["earth_velocity"][2],
+        VzError=target_state["vz"] - previous_state["earth_velocity"][2],
+        Collective=np.rad2deg(control_inputs[0]),
+
+        Roll=np.rad2deg(previous_state["attitude"])[0],
+        RollError=0.0 - np.rad2deg(previous_state["attitude"])[0],
+        LatCyclic=np.rad2deg(control_inputs[1]),
+
+        Pitch=np.rad2deg(previous_state["attitude"])[1],
+        PitchError=0.0 - np.rad2deg(previous_state["attitude"])[1],
+        LongCyclic=np.rad2deg(control_inputs[2])
+    )
 
     new_state = euler6dof_step(previous_state, helicopter_data["F"], helicopter_data["M"], m, I, dt, a1, b1, a2, b2)
     position = new_state["position"]
@@ -96,6 +131,7 @@ for step in range(50):
 logger.save("log.csv")
 # loggerRotor.save("rotorLog.csv")
 loggerForcesAndMoments.save("forcesAndMomentsLog.csv")
+loggerControl.save("controllerLog.csv")
 
 plot_variables("log.csv", 
                x_var="Time", 
@@ -114,3 +150,28 @@ plot_variables("log.csv",
 #                y_vars=["ForceX", "ForceY", "ForceZ", "MomentX", "MomentY", "MomentZ"],
 #                title_prefix="Helicopter", 
 #                ylabel="Flight Variable")
+
+plot_grouped_subfigures(
+    csv_file="controllerLog.csv",
+    x_var="Time",
+    y_groups=[
+        ["Collective"],
+        ["LatCyclic"],
+        ["LongCyclic"],
+        ["TailRotor"]
+    ],
+    group_titles=[
+        "Collective (deg)",
+        "LatCyclic (deg)",
+        "LongCyclic (deg)",
+        "TailRotor (deg)"
+    ],
+    xlabel="Time (s)",
+    ylabel="Value",
+    nrows=4,
+    ncols=1
+)
+
+plt.show()  # Blocks until you close all figures manually
+input("Press Enter to close all plots and exit...")
+plt.close('all')
