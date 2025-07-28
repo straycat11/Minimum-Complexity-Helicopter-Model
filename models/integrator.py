@@ -3,10 +3,10 @@ import numpy as np
 from scipy.spatial.transform import Rotation as R
 
 def quaternion_derivative(q, omega):
-    # q = [w, x, y, z]
+    # q = [x, y, z, w]
     # omega = [p, q, r] = body angular rates
     p, q_, r = omega
-    w, x, y, z = q
+    x, y, z, w = q
 
     dqdt = 0.5 * np.array([
         -x * p - y * q_ - z * r,
@@ -65,7 +65,7 @@ def euler6dof_step(state, F, M, m, I, dt, a1, b1, a2, b2):
     q_new = q + dqdt * dt
     q_new = q_new / np.linalg.norm(q_new)  # Normalize to prevent drift
 
-    euler_angles = R.from_quat([q_new[1], q_new[2], q_new[3], q_new[0]]).as_euler("xyz")
+    euler_angles = R.from_quat([q_new[0], q_new[1], q_new[2],  q_new[3]]).as_euler("xyz")
     for i in range(3):
         xe[i] = pos[i] + dt * (a2 * ve[i] + b2 * vp[i])
 
