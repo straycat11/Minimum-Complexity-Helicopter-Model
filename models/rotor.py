@@ -70,7 +70,7 @@ class Rotor(Component):
         wr = airspeed[2]+(gv_7-self.main_rotor_incidence)*airspeed[0]-gv_8*airspeed[1]
         wb = wr + (2.0/3.0)*omega_mr*self.r_mr*(controls[0]+0.75*self.twst_mr)
 
-        for i in range(5):
+        for i in range(25):
             thrust_mr = (wb-vi_mr)*omega_mr*self.r_mr*rho*self.a_mr*self.b_mr*self.c_mr*self.r_mr/4.0
             vhat_2 = airspeed[0]**2.0 + airspeed[1]**2.0 + wr*(wr-2.0*vi_mr)
             vi_mr_2 = math.sqrt((vhat_2/2.0)*(vhat_2/2.0)+(thrust_mr/2.0/(rho*math.pi*self.r_mr**2.0))**2.0)-vhat_2/2.0
