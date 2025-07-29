@@ -14,6 +14,7 @@ class Fuselage(Component):
         self.wl_cg = config["WL.CG"]
         self.fs_hub = config["main_rotor"]["FS.HUB"]
         self.wl_hub = config["main_rotor"]["WL.HUB"]
+        self.rpm_mr = config["main_rotor"]["RPM.MR"]
         self.h_hub = (self.wl_hub - self.wl_cg)/12.0
         self.d_hub = (self.fs_hub - self.fs_cg)/12.0
         self.h_fus = (self.wl_fus - self.wl_cg)/12.0
@@ -22,6 +23,7 @@ class Fuselage(Component):
     def get_force_and_moment(self, state, controls, environment):
         airspeed = state.get("airspeed", np.array([0.0, 0.0, 0.0]))
         rho = environment.get("rho", 0.0023769)
+        omega_mr = self.rpm_mr*2.0*math.pi/60.0
         vi_mr = state.get("vi_mr_prev", 0.0)
         wa_fus = airspeed[2]-vi_mr
         d_fw = (airspeed[0]/(-wa_fus)*(self.h_hub-self.h_fus))-(self.d_fus-self.d_hub)
@@ -35,4 +37,4 @@ class Fuselage(Component):
 
         p_parasite = - x_fus * airspeed[0] - y_fus * airspeed[1] - z_fus*wa_fus
 
-        return {"Fx": x_fus, "Fy": y_fus, "Fz": z_fus, "Mx": l_fus, "My": m_fus, "Mz": 0.0, "p_parasite": p_parasite}
+        return {"Fx": x_fus, "Fy": y_fus, "Fz": z_fus, "Mx": l_fus, "My": m_fus, "Mz": p_parasite/omega_mr, "p_parasite": p_parasite}
