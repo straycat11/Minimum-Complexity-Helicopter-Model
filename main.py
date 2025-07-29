@@ -7,6 +7,7 @@ from utils.logger import Logger
 from utils.plotter import plot_variables
 from utils.plotter import plot_grouped_subfigures
 from config.params import params
+from controllers.helicopter_controller import HelicopterController
 import matplotlib.pyplot as plt
 from scipy.spatial.transform import Rotation as R
 
@@ -14,6 +15,7 @@ atmosphere = Atmosphere()
 logger = Logger(variable_names=["Time", "Altitude", "VerticalSpeed", "Acceleration", "XPos", "YPos", "ZPos", "EulerX", "EulerY", "EulerZ"])
 # loggerRotor = Logger(variable_names=["Time", "RotorForceX", "RotorForceY", "RotorForceZ", "RotorMomentZ", "RotorTorque"])
 loggerForcesAndMoments = Logger(variable_names=["Time", "ForceX", "ForceY", "ForceZ", "MomentX", "MomentY", "MomentZ"])
+controller = HelicopterController()
 loggerControl = Logger(variable_names=[
     "Time",
     "TargetYaw", "Yaw", "YawError", "TailRotor",
@@ -67,6 +69,7 @@ for step in range(50):
     environment_inputs = {
         "rho": atmosphere.get_density()
     }
+    # control_inputs = controller.compute_control_inputs(previous_state, dt, target_state)
     helicopter_data = heli.step(dt, previous_state, control_inputs, environment_inputs)
     
     loggerControl.log(
