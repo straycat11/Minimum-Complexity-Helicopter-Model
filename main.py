@@ -50,7 +50,7 @@ heli = Helicopter(params)
 # Define parameters (replace with actual values)
 F = np.array([0.0, 0.0, 10.0])  # lb
 M = np.array([0.0, 1000.0, 0.0])  # lb
-m = 9000.0  # lb
+m = 5401.0 / 32.2  # slug
 I = np.array([[2593.0, 0.0, 0.0], [0.0, 14320.0, 0.0], [0.0, 0.0, 12330.0]])  # Moment of inertia matrix
 dt = 0.01  # Time step
 a1, a2 = 1.5, 0.5  # Constants for the step
