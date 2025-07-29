@@ -8,6 +8,7 @@ from utils.plotter import plot_variables
 from utils.plotter import plot_grouped_subfigures
 from config.params import params
 import matplotlib.pyplot as plt
+from scipy.spatial.transform import Rotation as R
 
 atmosphere = Atmosphere() 
 logger = Logger(variable_names=["Time", "Altitude", "VerticalSpeed", "Acceleration", "XPos", "YPos", "ZPos", "EulerX", "EulerY", "EulerZ"])
@@ -29,14 +30,15 @@ target_state = {
 }
 
 # Define initial state and parameters (these are just placeholders)
+initial_euler = np.deg2rad([-3.9, 5.12, 0.0])
 previous_state = {
     "position": [0.0, 0.0, 0.0],
     "body_velocity": [0.0, 0.0, 0.0],
     "earth_velocity": [0.0, 0.0, 0.0],
     "body_acceleration": [0.0, 0.0, 0.0],
     "angular_acceleration": [0.0, 0.0, 0.0],
-    "attitude": [0.0, 0.0, 0.0],
-    "attitude_q": [1.0, 0.0, 0.0, 0.0],
+    "attitude": initial_euler,
+    "attitude_q": (R.from_euler('zyx',initial_euler)).as_quat(),
     "angular_rate": [0.0, 0.0, 0.0],
     "vi_mr_prev": 33.44,
     "gv_7_prev": 0.0,
@@ -57,7 +59,7 @@ a1, a2 = 1.5, 0.5  # Constants for the step
 b1, b2 = 1-a1, 1-a2
 t = 0.0
 
-control_inputs = np.deg2rad(np.array([11.6, 0.0, 0.0, 20.0]))
+control_inputs = np.deg2rad(np.array([12.03, -0.06, -0.07, 22.2]))
 
 for step in range(50):
 
