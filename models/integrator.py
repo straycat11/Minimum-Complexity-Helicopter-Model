@@ -9,10 +9,10 @@ def quaternion_derivative(q, omega):
     x, y, z, w = q
 
     dqdt = 0.5 * np.array([
-        -x * p - y * q_ - z * r,
          w * p + y * r - z * q_,
          w * q_ + z * p - x * r,
-         w * r + x * q_ - y * p
+         w * r + x * q_ - y * p,
+        -x * p - y * q_ - z * r
     ])
     return dqdt
 
