@@ -18,7 +18,7 @@ class HelicopterController:
         self.y_acc_pid = PID(kp=0.015, ki=0.001, kd=0.0)
 
 
-    def compute_control_inputs(self, state, dt, targets):
+    def compute_control_inputs(self, state, dt, targets, initial_euler):
         # Extract states
         roll = state["attitude"][0]     # radians
         pitch = state["attitude"][1]     # radians
@@ -41,7 +41,7 @@ class HelicopterController:
         # Get control corrections
         y_acc_ref = self.y_speed_pid.update(vy_err, dt)
         ay_err = y_acc_ref - ay
-        phi_ref = np.deg2rad(-3.9) + self.x_acc_pid.update(ay_err, dt)
+        phi_ref = np.deg2rad(initial_euler[0]) + self.x_acc_pid.update(ay_err, dt)
         phi_err = phi_ref - roll
         lateral_cyclic = self.phi_pid.update(phi_err, dt, roll_rate)
         # lateral_cyclic = 0.0
@@ -52,7 +52,7 @@ class HelicopterController:
         # collective = 0.0
         x_acc_ref = self.x_speed_pid.update(vx_err, dt, ax)
         ax_err = x_acc_ref - ax
-        theta_ref = np.deg2rad(5.12) - self.x_acc_pid.update(ax_err, dt)
+        theta_ref = np.deg2rad(initial_euler[1]) - self.x_acc_pid.update(ax_err, dt)
         theta_err = theta_ref - pitch
         longitudinal_cyclic = self.theta_pid.update(-theta_err, dt, -pitch_rate)
         # longitudinal_cyclic = 0.0

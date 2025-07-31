@@ -50,15 +50,14 @@ loggerStates = Logger(variable_names=["Time", "AccX", "AccY", "AccZ",
                                 "VelX", "VelY", "VelZ",
                                 "Roll", "Pitch"])
 
+# Define initial state and parameters (these are just placeholders)
+initial_euler = np.deg2rad([-3.9, 5.12, 0.0])
 target_state = {
     "yaw": 0.0,           # rad
     "vz": 0.0,            # m/s
     "vx": 0.0,            # m/s 
     "vy": 0.0          # m/s
 }
-
-# Define initial state and parameters (these are just placeholders)
-initial_euler = np.deg2rad([-3.9, 5.12, 0.0])
 previous_state = {
     "position": [0.0, 0.0, 0.0],
     "body_velocity": [0.0, 0.0, 0.0],
@@ -87,8 +86,8 @@ a1, a2 = 1.5, 0.5  # Constants for the step
 b1, b2 = 1-a1, 1-a2
 t = 0.0
 
-control_inputs = np.deg2rad(np.array([11.74, -0.06, -0.07, 25.4]))
-controller_inputs = control_inputs
+initial_control_inputs = np.deg2rad(np.array([11.74, -0.06, -0.07, 25.4]))
+controller_inputs = initial_control_inputs
 for step in range(50):
 
     atmosphere.update(-previous_state["position"][2])
@@ -96,7 +95,7 @@ for step in range(50):
         "rho": atmosphere.get_density()
     }
     helicopter_data = heli.step(dt, previous_state, controller_inputs, environment_inputs)
-    controller_inputs = control_inputs + controller.compute_control_inputs(previous_state, dt, target_state)
+    controller_inputs = initial_control_inputs + controller.compute_control_inputs(previous_state, dt, target_state, initial_euler)
 
     loggerControl.log(
         Time=t,
@@ -109,11 +108,11 @@ for step in range(50):
         Collective=np.rad2deg(controller_inputs[0]),
 
         Roll=np.rad2deg(previous_state["attitude"])[0],
-        RollError=-3.9 - np.rad2deg(previous_state["attitude"])[0],
+        RollError=initial_euler[0] - np.rad2deg(previous_state["attitude"])[0],
         LatCyclic=np.rad2deg(controller_inputs[1]),
 
         Pitch=np.rad2deg(previous_state["attitude"])[1],
-        PitchError=5.12 - np.rad2deg(previous_state["attitude"])[1],
+        PitchError=initial_euler[1] - np.rad2deg(previous_state["attitude"])[1],
         LongCyclic=np.rad2deg(controller_inputs[2])
     )
 
