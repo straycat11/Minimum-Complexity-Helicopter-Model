@@ -36,7 +36,7 @@ def freeze_channels(state):
 
 atmosphere = Atmosphere() 
 logger = Logger(variable_names=["Time", "Altitude", "VerticalSpeed", "Acceleration", "XPos", "YPos", "ZPos", "EulerX", "EulerY", "EulerZ"])
-# loggerRotor = Logger(variable_names=["Time", "RotorForceX", "RotorForceY", "RotorForceZ", "RotorMomentZ", "RotorTorque"])
+loggerRotor = Logger(variable_names=["Time", "RotorForceX", "RotorForceY", "RotorForceZ", "RotorMomentX", "RotorMomentY", "RotorMomentZ"])
 loggerForcesAndMoments = Logger(variable_names=["Time", "ForceX", "ForceY", "ForceZ", "MomentX", "MomentY", "MomentZ"])
 controller = HelicopterController()
 loggerControl = Logger(variable_names=[
@@ -46,6 +46,9 @@ loggerControl = Logger(variable_names=[
     "Roll", "RollError", "LatCyclic",
     "Pitch", "PitchError", "LongCyclic"
 ])
+loggerStates = Logger(variable_names=["Time", "AccX", "AccY", "AccZ",
+                                "VelX", "VelY", "VelZ",
+                                "Roll", "Pitch"])
 
 target_state = {
     "yaw": 0.0,           # rad
@@ -152,55 +155,17 @@ for step in range(50):
             EulerY=attitude[1],
             EulerZ=attitude[2])
 
-    
+    loggerStates.log(Time=t, AccX=body_acceleration[0], AccY=body_acceleration[1], AccZ=body_acceleration[2],
+     VelX=earth_velocity[0], VelY=earth_velocity[1], VelZ=earth_velocity[2],
+     Roll=np.rad2deg(previous_state["attitude"])[0], Pitch=np.rad2deg(previous_state["attitude"])[1])
     loggerForcesAndMoments.log(Time=t,ForceX=helicopter_data["F"][0], ForceY=helicopter_data["F"][1], ForceZ=helicopter_data["F"][2],
      MomentX=helicopter_data["M"][0], MomentY=helicopter_data["M"][1], MomentZ=helicopter_data["M"][2])
+    loggerRotor.log(Time=t, RotorForceX=helicopter_data["RotorForceX"], RotorForceY=helicopter_data["RotorForceY"],
+     RotorForceZ=helicopter_data["RotorForceZ"], RotorMomentX=helicopter_data["RotorMomentX"], RotorMomentY=helicopter_data["RotorMomentY"], RotorMomentZ=helicopter_data["RotorMomentZ"] )
     t += dt
 
 logger.save("log.csv")
-# loggerRotor.save("rotorLog.csv")
+loggerRotor.save("rotorLog.csv")
 loggerForcesAndMoments.save("forcesAndMomentsLog.csv")
 loggerControl.save("controllerLog.csv")
-
-plot_variables("log.csv", 
-               x_var="Time", 
-               y_vars=["Altitude", "VerticalSpeed", "Acceleration","XPos","YPos", "EulerX", "EulerY", "EulerZ"],
-               title_prefix="Helicopter", 
-               ylabel="Flight Variable")
-
-# plot_variables("rotorLog.csv", 
-#                x_var="Time", 
-#                y_vars=["RotorForceX", "RotorForceY", "RotorForceZ", "RotorMomentZ", "RotorTorque"],
-#                title_prefix="Helicopter", 
-#                ylabel="Flight Variable")
-
-# plot_variables("forcesAndMomentsLog.csv", 
-#                x_var="Time", 
-#                y_vars=["ForceX", "ForceY", "ForceZ", "MomentX", "MomentY", "MomentZ"],
-#                title_prefix="Helicopter", 
-#                ylabel="Flight Variable")
-
-plot_grouped_subfigures(
-    csv_file="controllerLog.csv",
-    x_var="Time",
-    y_groups=[
-        ["Collective"],
-        ["LatCyclic"],
-        ["LongCyclic"],
-        ["TailRotor"]
-    ],
-    group_titles=[
-        "Collective (deg)",
-        "LatCyclic (deg)",
-        "LongCyclic (deg)",
-        "TailRotor (deg)"
-    ],
-    xlabel="Time (s)",
-    ylabel="Value",
-    nrows=4,
-    ncols=1
-)
-
-plt.show()  # Blocks until you close all figures manually
-input("Press Enter to close all plots and exit...")
-plt.close('all')
+loggerStates.save("statesLog.csv")
