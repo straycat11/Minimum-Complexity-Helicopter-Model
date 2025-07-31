@@ -70,8 +70,8 @@ for step in range(50):
         "rho": atmosphere.get_density()
     }
     helicopter_data = heli.step(dt, previous_state, controller_inputs, environment_inputs)
-    # controller_inputs = control_inputs + controller.compute_control_inputs(previous_state, dt, target_state)
-    
+    controller_inputs = control_inputs + controller.compute_control_inputs(previous_state, dt, target_state)
+
     loggerControl.log(
         Time=t,
         TargetYaw=np.rad2deg(target_state["yaw"]), Yaw=np.rad2deg(previous_state["attitude"])[2],
@@ -83,11 +83,11 @@ for step in range(50):
         Collective=np.rad2deg(controller_inputs[0]),
 
         Roll=np.rad2deg(previous_state["attitude"])[0],
-        RollError=0.0 - np.rad2deg(previous_state["attitude"])[0],
+        RollError=-3.9 - np.rad2deg(previous_state["attitude"])[0],
         LatCyclic=np.rad2deg(controller_inputs[1]),
 
         Pitch=np.rad2deg(previous_state["attitude"])[1],
-        PitchError=0.0 - np.rad2deg(previous_state["attitude"])[1],
+        PitchError=5.12 - np.rad2deg(previous_state["attitude"])[1],
         LongCyclic=np.rad2deg(controller_inputs[2])
     )
 
