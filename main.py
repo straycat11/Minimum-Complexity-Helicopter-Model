@@ -61,34 +61,34 @@ a1, a2 = 1.5, 0.5  # Constants for the step
 b1, b2 = 1-a1, 1-a2
 t = 0.0
 
-control_inputs = np.deg2rad(np.array([12.03, -0.06, -0.07, 22.2]))
-
+control_inputs = np.deg2rad(np.array([11.74, -0.06, -0.07, 25.4]))
+controller_inputs = control_inputs
 for step in range(50):
 
     atmosphere.update(-previous_state["position"][2])
     environment_inputs = {
         "rho": atmosphere.get_density()
     }
-    # control_inputs = controller.compute_control_inputs(previous_state, dt, target_state)
-    helicopter_data = heli.step(dt, previous_state, control_inputs, environment_inputs)
+    helicopter_data = heli.step(dt, previous_state, controller_inputs, environment_inputs)
+    # controller_inputs = control_inputs + controller.compute_control_inputs(previous_state, dt, target_state)
     
     loggerControl.log(
         Time=t,
         TargetYaw=np.rad2deg(target_state["yaw"]), Yaw=np.rad2deg(previous_state["attitude"])[2],
         YawError=np.rad2deg(target_state["yaw"]) - np.rad2deg(previous_state["attitude"])[2],
-        TailRotor=np.rad2deg(control_inputs[3]),
+        TailRotor=np.rad2deg(controller_inputs[3]),
 
         TargetVz=target_state["vz"], Vz=previous_state["earth_velocity"][2],
         VzError=target_state["vz"] - previous_state["earth_velocity"][2],
-        Collective=np.rad2deg(control_inputs[0]),
+        Collective=np.rad2deg(controller_inputs[0]),
 
         Roll=np.rad2deg(previous_state["attitude"])[0],
         RollError=0.0 - np.rad2deg(previous_state["attitude"])[0],
-        LatCyclic=np.rad2deg(control_inputs[1]),
+        LatCyclic=np.rad2deg(controller_inputs[1]),
 
         Pitch=np.rad2deg(previous_state["attitude"])[1],
         PitchError=0.0 - np.rad2deg(previous_state["attitude"])[1],
-        LongCyclic=np.rad2deg(control_inputs[2])
+        LongCyclic=np.rad2deg(controller_inputs[2])
     )
 
     new_state = euler6dof_step(previous_state, helicopter_data["F"], helicopter_data["M"], m, I, dt, a1, b1, a2, b2)
