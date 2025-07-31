@@ -14,6 +14,13 @@
       "request": "launch",
       "program": "${workspaceFolder}/eulerTestBed.py",
       "console": "integratedTerminal"
+    },
+    {
+      "name": "Run Rotor Test Bed",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/rotorTestBed.py",
+      "console": "integratedTerminal"
     }
   ]
 }
