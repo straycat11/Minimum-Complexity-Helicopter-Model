@@ -59,5 +59,5 @@ class TailRotor(Component):
         y_tr = thrust_tr
         l_tr = y_tr*self.h_tr
         n_tr = -y_tr*self.d_tr
-        print(f"TailRotor: pedal={controls[3]:.3f}, vb_tr={vb_tr:.2f}, thrust={thrust_tr:.1f}, vi={vi_tr:.2f}, n_tr={n_tr:.1f}")
+
         return {"Fx": 0.0, "Fy": y_tr, "Fz": 0.0, "Mx": l_tr, "My": 0.0, "Mz": n_tr, "Power": power_tr, "vi_tr": vi_tr}
