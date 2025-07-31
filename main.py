@@ -11,6 +11,29 @@ from controllers.helicopter_controller import HelicopterController
 import matplotlib.pyplot as plt
 from scipy.spatial.transform import Rotation as R
 
+def freeze_channels(state):
+    # Freeze longitudinal (X), lateral (Y), vertical (Z) translation
+    # state["position"][0] = 0.0  # X position
+    state["position"][1] = 0.0  # Y position
+    # state["position"][2] = 0.0  # Z position (altitude)
+    # state["body_velocity"][0] = 0.0  # longitudinal speed
+    state["body_velocity"][1] = 0.0  # lateral speed
+    # state["body_velocity"][2] = 0.0  # vertical speed
+    # state["earth_velocity"][0] = 0.0
+    state["earth_velocity"][1] = 0.0
+    # state["earth_velocity"][2] = 0.0
+
+    # Freeze roll, pitch and yaw angles (phi, theta, psi) and rates
+    state["attitude"][0] = 0.0  # roll angle (phi)
+    # state["attitude"][1] = 0.0  # pitch angle (theta)
+    # state["attitude"][2] = 0.0  # yaw angle (psi)
+    state["angular_rate"][0] = 0.0  # roll rate (p)
+    # state["angular_rate"][1] = 0.0  # pitch rate (q)
+    # state["angular_rate"][2] = 0.0  # yaw rate (r)
+    state["angular_acceleration"][0] = 0.0
+    # state["angular_acceleration"][1] = 0.0
+    # state["angular_acceleration"][2] = 0.0
+
 atmosphere = Atmosphere() 
 logger = Logger(variable_names=["Time", "Altitude", "VerticalSpeed", "Acceleration", "XPos", "YPos", "ZPos", "EulerX", "EulerY", "EulerZ"])
 # loggerRotor = Logger(variable_names=["Time", "RotorForceX", "RotorForceY", "RotorForceZ", "RotorMomentZ", "RotorTorque"])
@@ -92,6 +115,7 @@ for step in range(50):
     )
 
     new_state = euler6dof_step(previous_state, helicopter_data["F"], helicopter_data["M"], m, I, dt, a1, b1, a2, b2)
+    # freeze_channels(new_state)
     position = new_state["position"]
     body_velocity = new_state["body_velocity"]
     body_acceleration = new_state["body_acceleration"]
