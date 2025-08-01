@@ -27,6 +27,9 @@ class Fuselage(Component):
         omega_mr = self.rpm_mr*2.0*math.pi/60.0
         vi_mr = state.get("vi_mr_prev", 0.0)
         wa_fus = airspeed[2]-float(self.interactions_mr)*vi_mr
+        if wa_fus==0:
+            wa_fus=0.0001
+
         d_fw = (airspeed[0]/(-wa_fus)*(self.h_hub-self.h_fus))-(self.d_fus-self.d_hub)
         d_fw = 3.0*d_fw
         
