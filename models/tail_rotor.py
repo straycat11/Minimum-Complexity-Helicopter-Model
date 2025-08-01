@@ -9,6 +9,7 @@ class TailRotor(Component):
         self.wl_tr = config["tail_rotor"]["WL.TR"]
         self.fs_cg = config["FS.CG"]
         self.wl_cg = config["WL.CG"]
+        self.interactions = config["interactions_tr"]
         self.rpm_tr = config["tail_rotor"]["RPM.TR"]
         self.r_tr = config["tail_rotor"]["R.TR"]
         self.a_tr = config["tail_rotor"]["A.TR"]
@@ -33,7 +34,7 @@ class TailRotor(Component):
         solve_gain_tr = 0.1
 
         for i in range(100):
-            if abs(airspeed[0]<=vb1):
+            if abs(airspeed[0]<=vb1) and self.interactions:
                 kb11 = ((1.0-kb1)*airspeed[0]**2.0/(vb1**2.0)+kb1)
             else:
                 kb11 = 1.0
