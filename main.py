@@ -190,12 +190,12 @@ for step in range(50):
      Roll=np.rad2deg(previous_state["attitude"])[0], Pitch=np.rad2deg(previous_state["attitude"])[1])
     loggerForcesAndMoments.log(Time=t,ForceX=helicopter_data["F"][0], ForceY=helicopter_data["F"][1], ForceZ=helicopter_data["F"][2],
      MomentX=helicopter_data["M"][0], MomentY=helicopter_data["M"][1], MomentZ=helicopter_data["M"][2])
-    loggerRotor.log(Time=t, RotorForceX=helicopter_data["RotorForceX"], RotorForceY=helicopter_data["RotorForceY"],
-     RotorForceZ=helicopter_data["RotorForceZ"], RotorMomentX=helicopter_data["RotorMomentX"], RotorMomentY=helicopter_data["RotorMomentY"], RotorMomentZ=helicopter_data["RotorMomentZ"] )
+    # loggerRotor.log(Time=t, RotorForceX=helicopter_data["RotorForceX"], RotorForceY=helicopter_data["RotorForceY"],
+    #  RotorForceZ=helicopter_data["RotorForceZ"], RotorMomentX=helicopter_data["RotorMomentX"], RotorMomentY=helicopter_data["RotorMomentY"], RotorMomentZ=helicopter_data["RotorMomentZ"] )
     t += dt
 
 logger.save("log.csv")
-loggerRotor.save("rotorLog.csv")
+# loggerRotor.save("rotorLog.csv")
 loggerForcesAndMoments.save("forcesAndMomentsLog.csv")
 loggerControl.save("controllerLog.csv")
 loggerStates.save("statesLog.csv")
