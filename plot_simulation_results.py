@@ -11,8 +11,9 @@ PLOT_Y_ACC = True
 PLOT_X_SPEED = True
 PLOT_Y_SPEED = True
 PLOT_VERTICAL_SPEED = False
-PLOT_ROLL = True
-PLOT_PITCH = True
+PLOT_ROLL_CONTROL = False
+PLOT_PITCH_CONTROL = False
+PLOT_EULER = True
 
 # ---- Plotting ----
 if PLOT_FLIGHT_PATH:
@@ -70,7 +71,7 @@ if PLOT_VERTICAL_SPEED:
         xlabel="Time (s)", ylabel="Value", nrows=2, ncols=1
     )
 
-if PLOT_ROLL:
+if PLOT_ROLL_CONTROL:
     plot_grouped_subfigures(
         "controllerLog.csv", "Time",
         [["Roll", "RollError"], ["LatCyclic"]],
@@ -78,12 +79,20 @@ if PLOT_ROLL:
         xlabel="Time (s)", ylabel="Value", nrows=2, ncols=1
     )
 
-if PLOT_PITCH:
+if PLOT_PITCH_CONTROL:
     plot_grouped_subfigures(
         "controllerLog.csv", "Time",
         [["Pitch", "PitchError"], ["LongCyclic"]],
         [["Measured Pitch", "Pitch Error"], ["Pitch Input"]],
         xlabel="Time (s)", ylabel="Value", nrows=2, ncols=1
+    )
+
+if PLOT_EULER:
+    plot_grouped_subfigures(
+        "controllerLog.csv", "Time",
+        [["Roll"], ["Pitch"], ["Yaw"]],
+        [["Roll (deg)"], ["Pitch (deg)"], ["Yaw (deg)"]],
+        xlabel="Time (s)", ylabel="Value", nrows=3, ncols=1
     )
 
 plt.show(block=True)
