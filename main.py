@@ -90,7 +90,7 @@ target_state = {
     "vy": 0.0          # m/s
 }
 previous_state = {
-    "position": [0.0, 0.0, 0.0],
+    "position": [0.0, 0.0, -1000.0],
     "body_velocity": [0.0, 0.0, 0.0],
     "earth_velocity": [0.0, 0.0, 0.0],
     "body_acceleration": [0.0, 0.0, 0.0],
