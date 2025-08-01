@@ -12,6 +12,7 @@ class Fuselage(Component):
         self.zww_fus = config["fuselage"]["ZWW.FUS"]
         self.fs_cg = config["FS.CG"]
         self.wl_cg = config["WL.CG"]
+        self.interactions_mr = config["interactions_mr"]
         self.fs_hub = config["main_rotor"]["FS.HUB"]
         self.wl_hub = config["main_rotor"]["WL.HUB"]
         self.rpm_mr = config["main_rotor"]["RPM.MR"]
@@ -25,7 +26,7 @@ class Fuselage(Component):
         rho = environment.get("rho", 0.0023769)
         omega_mr = self.rpm_mr*2.0*math.pi/60.0
         vi_mr = state.get("vi_mr_prev", 0.0)
-        wa_fus = airspeed[2]-vi_mr
+        wa_fus = airspeed[2]-float(self.interactions_mr)*vi_mr
         d_fw = (airspeed[0]/(-wa_fus)*(self.h_hub-self.h_fus))-(self.d_fus-self.d_hub)
         d_fw = 3.0*d_fw
         
