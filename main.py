@@ -34,6 +34,37 @@ def freeze_channels(state):
     # state["angular_acceleration"][1] = 0.0
     # state["angular_acceleration"][2] = 0.0
 
+def print_trim_summary(control_inputs_rad, state):
+    print("\n" + "="*30)
+    print("🛠️  Trim Condition Summary")
+    print("="*30)
+
+    control_labels = ["Collective (deg)", "Cyclic Long (deg)", "Cyclic Lat (deg)", "Tail Rotor (deg)"]
+    control_inputs_deg = np.rad2deg(control_inputs_rad)
+
+    print("\n> Control Inputs:")
+    for label, val in zip(control_labels, control_inputs_deg):
+        print(f"{label:20s}: {val:8.3f}")
+
+    print("\n> State Information:")
+    def vec3_fmt(v): return f"[{v[0]:7.3f}, {v[1]:7.3f}, {v[2]:7.3f}]"
+
+    print(f"{'Position (ft)':20s}: {vec3_fmt(state['position'])}")
+    print(f"{'Euler Angles (deg)':20s}: {vec3_fmt(np.rad2deg(state['attitude']))}")
+    print(f"{'Body Velocity (ft/s)':20s}: {vec3_fmt(state['body_velocity'])}")
+    print(f"{'Earth Velocity (ft/s)':20s}: {vec3_fmt(state['earth_velocity'])}")
+    print(f"{'Angular Rate (rad/s)':20s}: {vec3_fmt(state['angular_rate'])}")
+    print(f"{'Body Acceleration':20s}: {vec3_fmt(state['body_acceleration'])}")
+    print(f"{'Angular Accel.':20s}: {vec3_fmt(state['angular_acceleration'])}")
+
+    print("\n> Misc Helicopter Data:")
+    for key in ['vi_mr_prev', 'vi_tr_prev', 'gv_7_prev', 'gv_8_prev', 'gr_7_prev', 'gr_8_prev']:
+        val = state.get(key)
+        if isinstance(val, (list, np.ndarray)) and len(val) == 3:
+            print(f"{key:20s}: {vec3_fmt(val)}")
+        else:
+            print(f"{key:20s}: {val}")
+
 atmosphere = Atmosphere() 
 logger = Logger(variable_names=["Time", "Altitude", "VerticalSpeed", "Acceleration", "XPos", "YPos", "ZPos", "EulerX", "EulerY", "EulerZ"])
 loggerRotor = Logger(variable_names=["Time", "RotorForceX", "RotorForceY", "RotorForceZ", "RotorMomentX", "RotorMomentY", "RotorMomentZ"])
@@ -168,3 +199,5 @@ loggerRotor.save("rotorLog.csv")
 loggerForcesAndMoments.save("forcesAndMomentsLog.csv")
 loggerControl.save("controllerLog.csv")
 loggerStates.save("statesLog.csv")
+
+print_trim_summary(controller_inputs, previous_state)
