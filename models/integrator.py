@@ -34,7 +34,7 @@ def euler6dof_step(state, F, M, m, I, dt, a1, b1, a2, b2):
     s5 = math.sin(ang[1])
     s6 = math.sin(ang[2])
 
-    gravity_fts2 = 32.2
+    gravity_fts2 = 32.181
     MG = np.array([-m * gravity_fts2 * s5, m * gravity_fts2 * s4*c5, m * gravity_fts2 * c5*c4])
     F_with_grav = F + MG
 
