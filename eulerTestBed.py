@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from models.integrator import euler6dof_step
 from scipy.spatial.transform import Rotation as R
+from config.params import params
 
 # Initial state
 state = {
@@ -20,7 +21,7 @@ dt = 0.01  # seconds
 T = 5.0    # total simulation time
 steps = int(T / dt)
 
-m = 5401.0 / 32.2  # slug
+m = params["WT"] / 32.181  # slug
 I = np.diag([500.0, 600.0, 700.0])  # Inertia matrix
 I[0, 2] = I[2, 0] = 50.0  # Cross product inertia
 
