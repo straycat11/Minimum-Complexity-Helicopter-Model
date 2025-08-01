@@ -8,6 +8,8 @@ params = {
     "Ixz": 800.0,
     "dt" : 0.01, # step size
     "a2" : 0.5, # numerical integration constant
+    "interactions_mr" : False, # turn main rotor interactions on
+    "interactions_tr" : False, # turn tail rotor interactions on
     "rho_sea_level": 0.0023769,
     "main_rotor": {
         "FS.HUB": 132.4, # FT (fuselage station)

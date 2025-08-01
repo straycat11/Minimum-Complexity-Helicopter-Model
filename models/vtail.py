@@ -12,6 +12,7 @@ class VerticalTail(Component):
         self.ymax_vt = config["vertical_tail"]["YMAX.VT"]
         self.fs_cg = config["FS.CG"]
         self.wl_cg = config["WL.CG"]
+        self.interactions_tr = config["interactions_tr"]
         self.h_vt = (self.wl_vt - self.wl_cg)/12.0
         self.d_vt = (self.fs_vt - self.fs_cg)/12.0
 
@@ -21,7 +22,7 @@ class VerticalTail(Component):
         angular_rate = state.get("angular_rate", np.array([0.0, 0.0, 0.0]))
         rho = environment.get("rho", 0.0023769)
         vi_tr = state.get("vi_tr_prev", 0.0)
-        va_vt = airspeed[1]+vi_tr-self.d_vt*angular_rate[2]
+        va_vt = airspeed[1]+float(self.interactions_tr)*vi_tr-self.d_vt*angular_rate[2]
         vta_vt = math.sqrt(airspeed[0]**2+va_vt**2)
         y_vt = rho/2*(self.yuu_vt+abs(airspeed[0])*airspeed[0]+self.yuv_vt+abs(airspeed[0])*va_vt)
 

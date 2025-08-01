@@ -15,6 +15,7 @@ class HorizontalTail(Component):
         self.r_mr = config["main_rotor"]["R.MR"]
         self.fs_cg = config["FS.CG"]
         self.wl_cg = config["WL.CG"]
+        self.interactions_mr = config["interactions_mr"]
         self.h_ht = (self.wl_ht - self.wl_cg)/12.0
         self.d_ht = (self.fs_ht - self.fs_cg)/12.0
         self.h_hub = (self.wl_hub - self.wl_cg)/12.0
@@ -35,7 +36,7 @@ class HorizontalTail(Component):
         else:
             eps_ht = 0.0
 
-        wa_ht = airspeed[2] - eps_ht*vi_mr + self.d_ht*angular_rate[1]
+        wa_ht = airspeed[2] - float(self.interactions_mr)*eps_ht*vi_mr + self.d_ht*angular_rate[1]
         vta_ht = math.sqrt(airspeed[0]*airspeed[0]+airspeed[1]*airspeed[1] + wa_ht*wa_ht)
         z_ht = rho/2*(self.zuu_ht*abs(airspeed[0])*airspeed[0]+self.zuw_ht*abs(airspeed[0])*wa_ht)
 
