@@ -51,10 +51,6 @@ class TailRotor(Component):
             correction_tr = solve_gain_tr*(vi_tr_new-vi_tr)
             vi_tr = vi_tr + correction_tr
 
-            # vhat_2 = (airspeed[2]+angular_rate[1]*self.d_tr)**2.0 + airspeed[0]**2.0 + vr_tr*(vr_tr-2.0*vi_tr)
-            # vi_tr_2 = math.sqrt((vhat_2/2.0)**2.0+(thrust_tr/2.0/(rho*math.pi*self.r_tr**2.0))**2.0)-vhat_2/2.0
-            # vi_tr = math.sqrt(abs(vi_tr_2))
-        
         power_tr = thrust_tr*vi_tr
         y_tr = thrust_tr
         l_tr = y_tr*self.h_tr
